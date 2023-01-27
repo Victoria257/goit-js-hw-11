@@ -1,6 +1,8 @@
 "use strict";
 
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 
 const API_KEY = '33139428-a4880fd896903b0937526f617';
 const URL = 'https://pixabay.com/api/'
@@ -22,7 +24,13 @@ function searchUser(event) {
             } else {
                 list.innerHTML = ""
                 Notify.info(`Hooray! We found ${foto.totalHits} images.`)
+
                 addFotoToUserInterface(card)
+
+                let gallery = new SimpleLightbox('.gallery a');
+                gallery.on('show.simplelightbox', function () {
+	                console.log("BIG");
+                });
             }   
         })
         .catch(error => { console.log("Oops, there is error") })
@@ -39,7 +47,8 @@ async function fetchForUser(name) {
 function addFotoToUserInterface(card) {
             
     for (let i = 0; i < card.length; i += 1) {
-            
+
+        const imageeLarge = card[i].largeImageURL   
         const image = card[i].webformatURL
         const description = card[i].tags
         const likesAmount = card[i].likes
@@ -48,7 +57,11 @@ function addFotoToUserInterface(card) {
         const downloadsAmount = card[i].downloads
 
         list.innerHTML += `<li class="item">
-    <img src="${image}" alt="${description}" loading="lazy">
+        <div class="gallery">
+        <a href="${imageeLarge}">
+        <img src="${image}" alt="${description}" loading="lazy">
+        </a>
+        </div>
     <ul class="info">
         <li>
         <p>Likes</p>
@@ -74,3 +87,5 @@ function addFotoToUserInterface(card) {
 
 // Для HTTP-запитів використана бібліотека axios.
 //Пагінація
+//SimpleLightbox Бібліотека містить метод refresh(), який обов'язково потрібно викликати
+// щоразу після додавання нової групи карток зображень.
