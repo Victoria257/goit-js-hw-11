@@ -1,4 +1,7 @@
 "use strict";
+
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
+
 const API_KEY = '33139428-a4880fd896903b0937526f617';
 const URL = 'https://pixabay.com/api/'
 const input = document.querySelector(".searchQuery")
@@ -12,20 +15,28 @@ function searchUser(event) {
     const name = event.currentTarget.searchQuery.value
     fetchForUser(name)
         .then((foto) => {
-            addFotoToUserInterface (foto)          
+            const card = foto.hits
+            
+            if (card.length === 0) {
+                Notify.failure("Sorry, there are no images matching your search query. Please try again.")
+            } else {
+                list.innerHTML = ""
+                Notify.info(`Hooray! We found ${foto.totalHits} images.`)
+                addFotoToUserInterface(card)
+            }   
         })
-        .catchcatch(error => { console.log("Oops, there is no country with that name") })
-        .finally(() => input.reset);
+        .catch(error => { console.log("Oops, there is error") })
+        .finally(() => form.reset());
+
 }
 
-function fetchForUser(name) {
-    return fetch(`${URL}?key=${API_KEY}&q=${name}&image_type=photo&orientation=horizontal&safesearch=true`)  
-    .then((response) => response.json())
+async function fetchForUser(name) {
+   const response =  await fetch(`${URL}?key=${API_KEY}&q=${name}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40`)  
+    return await response.json();
 }
 
-function addFotoToUserInterface(foto) {
 
-    const card = foto.hits
+function addFotoToUserInterface(card) {
             
     for (let i = 0; i < card.length; i += 1) {
             
@@ -59,3 +70,7 @@ function addFotoToUserInterface(foto) {
     <li>`
     }
 }
+
+
+// Для HTTP-запитів використана бібліотека axios.
+//Пагінація
