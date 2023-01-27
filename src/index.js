@@ -9,13 +9,16 @@ const URL = 'https://pixabay.com/api/'
 const input = document.querySelector(".searchQuery")
 const form = document.querySelector(".search-form")
 const list = document.querySelector(".list")
+const laadMoreBtn = document.querySelector(".load-more")
 
 form.addEventListener("submit", searchUser)
+laadMoreBtn.addEventListener("click", searchOnLoadMoreBtn)
 
 function searchUser(event) {
     event.preventDefault()
     const name = event.currentTarget.searchQuery.value
-    fetchForUser(name)
+    const pageAmount = 1;
+    fetchForUser(name, pageAmount)
         .then((foto) => {
             const card = foto.hits
             
@@ -38,8 +41,14 @@ function searchUser(event) {
 
 }
 
-async function fetchForUser(name) {
-   const response =  await fetch(`${URL}?key=${API_KEY}&q=${name}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40`)  
+// async function searchOnLoadMoreBtn() {
+//     const response =  await fetch(`${URL}?key=${API_KEY}&q=${name}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${pageAmount}`)  
+//     return await response.json();
+// }
+
+
+async function fetchForUser(name, pageAmount) {
+   const response =  await fetch(`${URL}?key=${API_KEY}&q=${name}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${pageAmount}`)  
     return await response.json();
 }
 
@@ -58,8 +67,8 @@ function addFotoToUserInterface(card) {
 
         list.innerHTML += `<li class="item">
         <div class="gallery">
-        <a href="${imageeLarge}">
-        <img src="${image}" alt="${description}" loading="lazy">
+        <a class"link" href="${imageeLarge}">
+        <img class="image" src="${image}" alt="${description}" loading="lazy">
         </a>
         </div>
     <ul class="info">
@@ -86,6 +95,12 @@ function addFotoToUserInterface(card) {
 
 
 // Для HTTP-запитів використана бібліотека axios.
+
 //Пагінація
+
 //SimpleLightbox Бібліотека містить метод refresh(), який обов'язково потрібно викликати
 // щоразу після додавання нової групи карток зображень.
+
+//плавне прокручування
+
+//Нескінченний скрол
