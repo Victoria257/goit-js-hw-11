@@ -4,8 +4,6 @@ import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 import throttle from 'lodash.throttle';
 
-// import InfiniteScroll from "infinite-scroll"
-
 
 const API_KEY = '33139428-a4880fd896903b0937526f617';
 const URL = 'https://pixabay.com/api/'
@@ -60,7 +58,7 @@ function checkPosition() {
   const screenHeight = window.innerHeight
   const scrolled = window.scrollY
 
-  const threshold = height - screenHeight /2
+  const threshold = height - screenHeight /4
   const position = scrolled + screenHeight
 
       if (position >= threshold) {
@@ -141,21 +139,16 @@ function addFotoToUserInterface(card) {
     <li>`
     }
 
-    smoothScroll()
-}
-
-function smoothScroll() {
     const { height: cardHeight } = document
     .querySelector(".gallery")
-        .firstElementChild.getBoundingClientRect();
-    const elementPosition = scrollTarget.getBoundingClientRect().top;
-    console.log(cardHeight);
-    console.log(elementPosition);
+    .firstElementChild.getBoundingClientRect();
+
     window.scrollBy({
     top: cardHeight * 2,
     behavior: "smooth",
     });
 }
+
 
 
 
@@ -171,6 +164,3 @@ function smoothScroll() {
 //SimpleLightbox Бібліотека містить метод refresh(), який обов'язково потрібно викликати
 // щоразу після додавання нової групи карток зображень.
 
-//плавне прокручування
-
-//Нескінченний скрол
