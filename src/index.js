@@ -15,12 +15,12 @@ const list = document.querySelector(".list")
 
 window.addEventListener('scroll', throttle(checkPosition, 250))
 window.addEventListener('resize', throttle(checkPosition, 250))
-form.addEventListener("submit", searchUser)
+form.addEventListener("submit", searchFromhUser)
 // laadMoreBtn.addEventListener("click", searchOnLoadMoreBtn)
 
 let pageAmount = 1;
 
-function searchUser(event) {
+function searchFromhUser(event) {
     // laadMoreBtn.classList.add("is-hidden")
     event.preventDefault()
     const name = event.currentTarget.searchQuery.value
@@ -95,8 +95,9 @@ function searchOnLoadMoreBtn() {
 
 
 async function fetchForUser(name, pageAmount) {
-   const response =  await fetch(`${URL}?key=${API_KEY}&q=${name}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${pageAmount}`)  
-    return await response.json();
+   const response =  await axios.get(`${URL}?key=${API_KEY}&q=${name}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${pageAmount}`)  
+    return await response.data;
+
 }
 
 
@@ -156,9 +157,6 @@ function addFotoToUserInterface(card) {
 //Пагінація
 // При повторному сабміті форми кнопка спочатку ховається,
 //     а після запиту знову відображається.
-
-
-// Для HTTP-запитів використана бібліотека axios.
 
 
 //SimpleLightbox Бібліотека містить метод refresh(), який обов'язково потрібно викликати
