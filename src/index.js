@@ -1,39 +1,53 @@
-"use strict";
 
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
+import throttle from 'lodash.throttle';
+
+// import InfiniteScroll from "infinite-scroll"
+
 
 const API_KEY = '33139428-a4880fd896903b0937526f617';
 const URL = 'https://pixabay.com/api/'
 const input = document.querySelector(".searchQuery")
 const form = document.querySelector(".search-form")
 const list = document.querySelector(".list")
-const laadMoreBtn = document.querySelector(".load-more")
 
+// const laadMoreBtn = document.querySelector(".load-more")
+
+window.addEventListener('scroll', throttle(checkPosition, 250))
+window.addEventListener('resize', throttle(checkPosition, 250))
 form.addEventListener("submit", searchUser)
-laadMoreBtn.addEventListener("click", searchOnLoadMoreBtn)
+// laadMoreBtn.addEventListener("click", searchOnLoadMoreBtn)
+
+let pageAmount = 1;
 
 function searchUser(event) {
+    // laadMoreBtn.classList.add("is-hidden")
     event.preventDefault()
     const name = event.currentTarget.searchQuery.value
-    const pageAmount = 1;
+    pageAmount = 1;
+
     fetchForUser(name, pageAmount)
         .then((foto) => {
             const card = foto.hits
             
             if (card.length === 0) {
-                Notify.failure("Sorry, there are no images matching your search query. Please try again.")
+                Notify.failure("Sorry, there are no images matching your search query. Please try again.", { position: 'center-center'})
             } else {
                 list.innerHTML = ""
-                Notify.info(`Hooray! We found ${foto.totalHits} images.`)
+                Notify.info(`Hooray! We found ${foto.totalHits} images.`);
 
                 addFotoToUserInterface(card)
+             
+                // laadMoreBtn.classList.remove("is-hidden")
 
                 let gallery = new SimpleLightbox('.gallery a');
                 gallery.on('show.simplelightbox', function () {
 	                console.log("BIG");
                 });
+
+                pageAmount += 1;
             }   
         })
         .catch(error => { console.log("Oops, there is error") })
@@ -41,10 +55,45 @@ function searchUser(event) {
 
 }
 
-// async function searchOnLoadMoreBtn() {
-//     const response =  await fetch(`${URL}?key=${API_KEY}&q=${name}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${pageAmount}`)  
-//     return await response.json();
-// }
+function checkPosition() {
+  const height = document.body.offsetHeight
+  const screenHeight = window.innerHeight
+  const scrolled = window.scrollY
+
+  const threshold = height - screenHeight /2
+  const position = scrolled + screenHeight
+
+      if (position >= threshold) {
+    searchOnLoadMoreBtn()
+  }
+}
+
+function searchOnLoadMoreBtn() {
+    const name = input.value
+    pageAmount += 1;
+
+    fetchForUser(name, pageAmount)
+        .then((foto) => {
+            const card = foto.hits
+            const totalPageAmount = Math.ceil(foto.totalHits / foto.hits.length-1)
+            //console.log(totalPageAmount);
+
+            if (pageAmount <= totalPageAmount) {
+
+                addFotoToUserInterface(card)
+
+                let gallery = new SimpleLightbox('.gallery a');
+                gallery.on('show.simplelightbox', function () {
+                    console.log("BIG");
+                });
+            } else  Notify.warning("We're sorry, but you've reached the end of search results.",  { position: 'center-bottom'})
+            // }   
+        })
+        .catch(error => { console.log("Oops, there is error") })
+        .finally(() => form.reset());
+
+}
+
 
 
 async function fetchForUser(name, pageAmount) {
@@ -68,7 +117,7 @@ function addFotoToUserInterface(card) {
         list.innerHTML += `<li class="item">
         <div class="gallery">
         <a class"link" href="${imageeLarge}">
-        <img class="image" src="${image}" alt="${description}" loading="lazy">
+        <img class="image" src="${image}" alt="${description}" loading="lazy" width="288" height="187">
         </a>
         </div>
     <ul class="info">
@@ -91,12 +140,33 @@ function addFotoToUserInterface(card) {
     </ul>
     <li>`
     }
+
+    smoothScroll()
 }
+
+function smoothScroll() {
+    const { height: cardHeight } = document
+    .querySelector(".gallery")
+        .firstElementChild.getBoundingClientRect();
+    const elementPosition = scrollTarget.getBoundingClientRect().top;
+    console.log(cardHeight);
+    console.log(elementPosition);
+    window.scrollBy({
+    top: cardHeight * 2,
+    behavior: "smooth",
+    });
+}
+
+
+
+
+//Пагінація
+// При повторному сабміті форми кнопка спочатку ховається,
+//     а після запиту знову відображається.
 
 
 // Для HTTP-запитів використана бібліотека axios.
 
-//Пагінація
 
 //SimpleLightbox Бібліотека містить метод refresh(), який обов'язково потрібно викликати
 // щоразу після додавання нової групи карток зображень.
