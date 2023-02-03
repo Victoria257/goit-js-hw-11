@@ -29,6 +29,11 @@ function searchFromhUser(event) {
     const name = event.currentTarget.searchQuery.value
     pageAmount = 1;
 
+    // if (!name) {
+    //     Notify.failure("Введіть, будь ласка, ваш запит", { position: 'center-center'})
+    //     return
+    // }
+
     fetchForUser(name, pageAmount)
         .then((foto) => {
             const card = foto.hits
