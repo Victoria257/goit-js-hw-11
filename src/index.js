@@ -19,6 +19,8 @@ window.addEventListener('resize', throttle(checkPosition, 250))
 form.addEventListener("submit", searchFromhUser)
 // laadMoreBtn.addEventListener("click", searchOnLoadMoreBtn)
 
+let gallery = new SimpleLightbox('.gallery a'); 
+ 
 let pageAmount = 1;
 
 function searchFromhUser(event) {
@@ -41,10 +43,7 @@ function searchFromhUser(event) {
              
                 // laadMoreBtn.classList.remove("is-hidden")
 
-                let gallery = new SimpleLightbox('.gallery a');
-                gallery.on('show.simplelightbox', function () {
-	                console.log("BIG");
-                });
+                gallery.refresh()
 
                 pageAmount += 1;
             }   
@@ -81,10 +80,8 @@ function searchOnLoadMoreBtn() {
 
                 addFotoToUserInterface(card)
 
-                let gallery = new SimpleLightbox('.gallery a');
-                gallery.on('show.simplelightbox', function () {
-                    console.log("BIG");
-                });
+                gallery.refresh()
+             
             } else  Notify.warning("We're sorry, but you've reached the end of search results.",  { position: 'center-bottom'})
             // }   
         })
@@ -160,6 +157,4 @@ function addFotoToUserInterface(card) {
 //     а після запиту знову відображається.
 
 
-//SimpleLightbox Бібліотека містить метод refresh(), який обов'язково потрібно викликати
-// щоразу після додавання нової групи карток зображень.
 
